@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #8e44ad;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            background: #7f8c8d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-view {
+            background: #8e44ad;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 15px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #8e44ad;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        #dataResult {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="location.href='/dashboard'">← Back to Dashboard</button>
+
+        <div class="header">
+            <h1>📊 View Data</h1>
+            <p>View users, accounts, and transactions</p>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-view" onclick="loadUsers()">👥 Load All Users</button>
+            <button class="btn-view" onclick="loadAccounts()">🏦 Load All Accounts</button>
+            <button class="btn-view" onclick="loadTransactions()">📄 Load All Transactions</button>
+        </div>
+
+        <div id="dataResult"></div>
+    </div>
+
+    <script>
+        // Load Users
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const users = await response.json();
+                displayTable('dataResult', users, ['id', 'username', 'email', 'fullName', 'phoneNumber', 'createdAt'], 'Users');
+            } catch (error) {
+                document.getElementById('dataResult').innerHTML = `<p style="color: red;">Error loading users: ${error.message}</p>`;
+            }
+        }
+
+        // Load Accounts
+        async function loadAccounts() {
+            try {
+                const response = await fetch('/api/accounts');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const accounts = await response.json();
+                displayTable('dataResult', accounts, ['id', 'accountNumber', 'accountType', 'balance', 'createdAt'], 'Accounts');
+            } catch (error) {
+                document.getElementById('dataResult').innerHTML = `<p style="color: red;">Error loading accounts: ${error.message}</p>`;
+            }
+        }
+
+        // Load Transactions
+        async function loadTransactions() {
+            try {
+                const response = await fetch('/api/transactions');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const transactions = await response.json();
+                displayTable('dataResult', transactions, ['id', 'fromAccountNumber', 'toAccountNumber', 'amount', 'transactionType', 'description', 'status', 'transactionDate'], 'Transactions');
+            } catch (error) {
+                document.getElementById('dataResult').innerHTML = `<p style="color: red;">Error loading transactions: ${error.message}</p>`;
+            }
+        }
+
+        function displayTable(elementId, data, columns, title) {
+            const element = document.getElementById(elementId);
+            if (data.length === 0) {
+                element.innerHTML = `<h3>${title}</h3><p>No data found.</p>`;
+                return;
+            }
+
+            let html = `<h3>${title}</h3><table><thead><tr>`;
+            columns.forEach(col => html += `<th>${col}</th>`);
+            html += '</tr></thead><tbody>';
+
+            data.forEach(item => {
+                html += '<tr>';
+                columns.forEach(col => {
+                    let value = item[col];
+                    if (value && typeof value === 'object' && value.id) {
+                        value = `ID: ${value.id}`;
+                    }
+                    html += `<td>${value || ''}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            element.innerHTML = html;
+        }
+    </script>
+</body>
+
+</html>
