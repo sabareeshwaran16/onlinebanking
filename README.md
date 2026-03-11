@@ -1,6 +1,9 @@
 Deployed Link:https://onlinebanking-t58j.onrender.com
 
 
+user:user
+password:pass
+
 
 Database(Sql):aiven
 Frontend and Backend=Render
