@@ -1,3 +1,9 @@
+Deployed Link:https://onlinebanking-t58j.onrender.com
+
+
+
+Database(Sql):aiven
+Frontend and Backend=Render
 # 🏦 Online Banking System - Admin Portal
 
 A premium Spring Boot application for managing banking operations. This project features a secure administrative interface with a modern, glassmorphic design.
